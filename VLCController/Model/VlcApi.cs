@@ -6,7 +6,7 @@ using DerAtrox.VLCController.Exceptions;
 using DerAtrox.VLCController.Model.Api;
 using Newtonsoft.Json;
 
-namespace DerAtrox.VLCController.Model.Helper
+namespace DerAtrox.VLCController.Model
 {
     public class VlcApi
     {

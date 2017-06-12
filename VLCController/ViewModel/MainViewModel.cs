@@ -3,7 +3,6 @@ using GalaSoft.MvvmLight.Command;
 using System.Windows;
 using DerAtrox.VLCController.Exceptions;
 using DerAtrox.VLCController.Model;
-using DerAtrox.VLCController.Model.Helper;
 using DerAtrox.VLCController.Model.Api;
 
 namespace DerAtrox.VLCController.ViewModel
@@ -154,7 +153,6 @@ namespace DerAtrox.VLCController.ViewModel
             }
             catch (ApiRespondException e)
             {
-                MessageBox.Show(e.Message);
                 MessageBox.Show("Could not connect to remote host");
                 return;
             }

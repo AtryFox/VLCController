@@ -80,7 +80,7 @@
     </Compile>
     <Compile Include="Exceptions\ApiRespondException.cs" />
     <Compile Include="Model\Api\Status.cs" />
-    <Compile Include="Model\Helper\VlcApi.cs" />
+    <Compile Include="Model\VlcApi.cs" />
     <Compile Include="Model\LoginCredentials.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
