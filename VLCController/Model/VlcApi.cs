@@ -19,7 +19,7 @@ namespace DerAtrox.VLCController.Model
 
         private readonly ObservableCollection<string> _statusRequestStack = new ObservableCollection<string>();
 
-        private readonly BackgroundWorker _statusRequestWorker = new BackgroundWorker();
+        private readonly BackgroundWorker _statusRequestWorker = new BackgroundWorker() {WorkerSupportsCancellation = true};
 
         private readonly Timer _statusUpdater = new Timer() { Interval = 1000 };
 
@@ -115,5 +115,13 @@ namespace DerAtrox.VLCController.Model
             return JsonConvert.DeserializeObject<Status>(rawData);
         }
 
+        public void Dispose() {
+            _statusRequestStack.Clear();
+            _statusRequestWorker.CancelAsync();
+            _statusUpdater.Stop();
+            StatusChanged = null;
+            RequestError = null;
+            StatusRequestCountChanged = null;
+        }
     }
 }

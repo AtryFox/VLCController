@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System.Windows;
@@ -131,6 +132,8 @@ namespace DerAtrox.VLCController.ViewModel
 
                 IsMute = Volume == 0;
 
+                VlcApiConnection.RequestStatus("volume&val=" + Volume);
+
                 RaisePropertyChanged();
             }
         }
@@ -150,10 +153,10 @@ namespace DerAtrox.VLCController.ViewModel
 
         public RelayCommand Mute => new RelayCommand(() => MuteCommand());
         public RelayCommand TestConnection => new RelayCommand(() => TestConnectionCommand());
-        public RelayCommand UpdateVolume => new RelayCommand(() => VlcApiConnection.RequestStatus("volume&val=" + Volume));
 
-        public void TestConnectionCommand()
-        {
+        public void TestConnectionCommand() {
+            if (VlcApiConnection != null) VlcApiConnection.Dispose();
+            GC.Collect();
             VlcApiConnection = new VlcApi(new LoginCredentials(Hostname, Port, Password));
 
             VlcApiConnection.StatusChanged += (sender, status) =>

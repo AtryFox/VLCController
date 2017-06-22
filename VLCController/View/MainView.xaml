@@ -37,13 +37,7 @@
                 Width="120" IsEnabled="{Binding ConnectionState}" Command="{Binding Mute}" />
         <CheckBox Content="IsMute" HorizontalAlignment="Left" Margin="152,185,0,0" VerticalAlignment="Top"
                   IsEnabled="False" IsChecked="{Binding IsMute}" />
-        <Slider HorizontalAlignment="Left" Margin="19,212,0,0" VerticalAlignment="Top" Width="193" Maximum="320" Value="{Binding Volume}" SmallChange="10" TickFrequency="10" LargeChange="10" IsEnabled="{Binding ConnectionState}">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="ValueChanged">
-                    <command:EventToCommand Command="{Binding UpdateVolume}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </Slider>
+        <Slider HorizontalAlignment="Left" Margin="19,212,0,0" VerticalAlignment="Top" Width="193" Maximum="320" Value="{Binding Volume}" SmallChange="10" TickFrequency="10" LargeChange="10" IsEnabled="{Binding ConnectionState}"/>
 
         <Label Content="{Binding StatusRequestCount}" ContentStringFormat="{}{0} Requests" HorizontalAlignment="Left" Margin="19,253,0,0" VerticalAlignment="Top"/>
 
