@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System.Collections.Generic;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System.Windows;
 using DerAtrox.VLCController.Exceptions;
@@ -10,12 +11,17 @@ namespace DerAtrox.VLCController.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private bool _isMute = false;
-        private string _currentTrack = "";
         private string _connectionString = "";
         private bool _connectionState = false;
         private string _hostname = "localhost";
         private string _password = "";
         private int _port = 8080;
+        private int _volume;
+        private int _lastVolume;
+
+        private int _statusRequestCount;
+
+        private Status _status;
 
         public VlcApi VlcApiConnection;
 
@@ -28,19 +34,6 @@ namespace DerAtrox.VLCController.ViewModel
             set
             {
                 _isMute = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        public string CurrentTrack
-        {
-            get
-            {
-                return _currentTrack;
-            }
-            set
-            {
-                _currentTrack = value;
                 RaisePropertyChanged();
             }
         }
@@ -110,55 +103,91 @@ namespace DerAtrox.VLCController.ViewModel
             }
         }
 
+        public Status Status
+        {
+            get
+            {
+                return _status;
+            }
+            set
+            {
+                _status = value;
+
+                Volume = Status.Volume;
+
+                RaisePropertyChanged();
+            }
+        }
+
+        public int Volume
+        {
+            get
+            {
+                return _volume;
+            }
+            set
+            {
+                _volume = value;
+
+                IsMute = Volume == 0;
+
+                RaisePropertyChanged();
+            }
+        }
+
+        public int StatusRequestCount
+        {
+            get
+            {
+                return _statusRequestCount;
+            }
+            set
+            {
+                _statusRequestCount = value;
+                RaisePropertyChanged();
+            }
+        }
+
         public RelayCommand Mute => new RelayCommand(() => MuteCommand());
         public RelayCommand TestConnection => new RelayCommand(() => TestConnectionCommand());
+        public RelayCommand UpdateVolume => new RelayCommand(() => VlcApiConnection.RequestStatus("volume&val=" + Volume));
 
-
-        public async void TestConnectionCommand()
+        public void TestConnectionCommand()
         {
             VlcApiConnection = new VlcApi(new LoginCredentials(Hostname, Port, Password));
 
-            try
+            VlcApiConnection.StatusChanged += (sender, status) =>
             {
-                Status data = await VlcApiConnection.GetStatus();
-                CurrentTrack = data.Information.Category.Meta.Title;
-            }
-            catch (ApiRespondException e)
-            {
-                ConnectionString = "Connection Error";
-                ConnectionState = false;
-                return;
-            }
+                Status = status;
+                ConnectionString = "Connected";
+                ConnectionState = true;
+            };
 
-            ConnectionString = "Connection successfully";
-            ConnectionState = true;
+            VlcApiConnection.RequestError += (sender, e) =>
+            {
+                MessageBox.Show(e.Message);
+                ConnectionString = "Error connecting";
+                ConnectionState = false;
+            };
+
+            VlcApiConnection.StatusRequestCountChanged += (sender, e) => {
+                StatusRequestCount = e;
+            };
+
+            VlcApiConnection.RequestStatus();
         }
 
-        public async void MuteCommand()
+        public void MuteCommand()
         {
-            string action = "volume&val=";
-
             if (IsMute)
             {
-                action += "50";
+                Volume = _lastVolume;
             }
             else
             {
-                action += "0";
+                _lastVolume = Volume;
+                Volume = 0;
             }
-
-            try
-            {
-                Status data = await VlcApiConnection.GetStatus(action);
-            }
-            catch (ApiRespondException e)
-            {
-                MessageBox.Show("Could not connect to remote host");
-                return;
-            }
-
-            IsMute = !IsMute;
-
         }
     }
 }
