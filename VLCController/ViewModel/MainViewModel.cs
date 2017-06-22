@@ -154,7 +154,8 @@ namespace DerAtrox.VLCController.ViewModel
         public RelayCommand Mute => new RelayCommand(() => MuteCommand());
         public RelayCommand TestConnection => new RelayCommand(() => TestConnectionCommand());
 
-        public void TestConnectionCommand() {
+        public void TestConnectionCommand()
+        {
             if (VlcApiConnection != null) VlcApiConnection.Dispose();
             GC.Collect();
             VlcApiConnection = new VlcApi(new LoginCredentials(Hostname, Port, Password));
@@ -173,7 +174,8 @@ namespace DerAtrox.VLCController.ViewModel
                 ConnectionState = false;
             };
 
-            VlcApiConnection.StatusRequestCountChanged += (sender, e) => {
+            VlcApiConnection.StatusRequestCountChanged += (sender, e) =>
+            {
                 StatusRequestCount = e;
             };
 

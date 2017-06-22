@@ -39,7 +39,7 @@
                   IsEnabled="False" IsChecked="{Binding IsMute}" />
         <Slider HorizontalAlignment="Left" Margin="19,212,0,0" VerticalAlignment="Top" Width="193" Maximum="320" Value="{Binding Volume}" SmallChange="10" TickFrequency="10" LargeChange="10" IsEnabled="{Binding ConnectionState}"/>
 
-        <Label Content="{Binding StatusRequestCount}" ContentStringFormat="{}{0} Requests" HorizontalAlignment="Left" Margin="19,253,0,0" VerticalAlignment="Top"/>
+        <Label Content="{Binding StatusRequestCount}" ContentStringFormat="{}{0} queued requests" HorizontalAlignment="Left" Margin="19,253,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </controls:MetroWindow>

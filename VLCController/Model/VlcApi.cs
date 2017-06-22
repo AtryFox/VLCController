@@ -17,9 +17,9 @@ namespace DerAtrox.VLCController.Model
         private readonly LoginCredentials _cred;
         private readonly string _baseUrl;
 
-        private readonly ObservableCollection<string> _statusRequestStack = new ObservableCollection<string>();
+        private readonly ObservableCollection<string> _statusRequestQueue = new ObservableCollection<string>();
 
-        private readonly BackgroundWorker _statusRequestWorker = new BackgroundWorker() {WorkerSupportsCancellation = true};
+        private readonly BackgroundWorker _statusRequestWorker = new BackgroundWorker() { WorkerSupportsCancellation = true };
 
         private readonly Timer _statusUpdater = new Timer() { Interval = 1000 };
 
@@ -36,31 +36,31 @@ namespace DerAtrox.VLCController.Model
             {
                 _statusUpdater.Stop();
 
-                while (_statusRequestStack.Count >= 1)
+                while (_statusRequestQueue.Count >= 1)
                 {
                     if (_statusRequestWorker.CancellationPending) return;
 
                     try
                     {
-                        Status status = GetStatusSync(_statusRequestStack[0]);
-                        if (_statusRequestStack[0] == "") StatusChanged?.Invoke(this, status);
-                        _statusRequestStack.RemoveAt(0);
+                        Status status = GetStatusSync(_statusRequestQueue[0]);
+                        if (_statusRequestQueue[0] == "") StatusChanged?.Invoke(this, status);
+                        _statusRequestQueue.RemoveAt(0);
                     }
                     catch (ApiRespondException e)
                     {
                         RequestError?.Invoke(this, e);
-                        _statusRequestStack.Clear();
+                        _statusRequestQueue.Clear();
                         return;
                     }
                 }
-                
+
                 _statusUpdater.Start();
             };
 
-            _statusRequestStack.CollectionChanged += (sender, args) =>
+            _statusRequestQueue.CollectionChanged += (sender, args) =>
             {
                 if (!_statusRequestWorker.IsBusy) _statusRequestWorker.RunWorkerAsync();
-                StatusRequestCountChanged?.Invoke(sender, _statusRequestStack.Count);
+                StatusRequestCountChanged?.Invoke(sender, _statusRequestQueue.Count);
             };
 
             _statusUpdater.Elapsed += (sender, args) =>
@@ -73,7 +73,7 @@ namespace DerAtrox.VLCController.Model
 
         public void RequestStatus(string action = "")
         {
-            _statusRequestStack.Add(action);
+            _statusRequestQueue.Add(action);
         }
 
         private Status GetStatusSync(string action = "")
@@ -117,8 +117,9 @@ namespace DerAtrox.VLCController.Model
             return JsonConvert.DeserializeObject<Status>(rawData);
         }
 
-        public void Dispose() {
-            _statusRequestStack.Clear();
+        public void Dispose()
+        {
+            _statusRequestQueue.Clear();
             _statusRequestWorker.CancelAsync();
             _statusUpdater.Stop();
             StatusChanged = null;

@@ -57,7 +57,8 @@ namespace DerAtrox.VLCController.Model.Api
         public List<object> Titles { get; set; }
     }
 
-    public class Status {
+    public class Status
+    {
         [JsonProperty(PropertyName = "fullscreen")]
         public int Fullscreen { get; set; }
 
