@@ -38,6 +38,8 @@ namespace DerAtrox.VLCController.Model
 
                 while (_statusRequestStack.Count >= 1)
                 {
+                    if (_statusRequestWorker.CancellationPending) return;
+
                     try
                     {
                         Status status = GetStatusSync(_statusRequestStack[0]);
